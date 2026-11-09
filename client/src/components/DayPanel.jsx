@@ -4,6 +4,7 @@ import { formatLong } from '../dateUtils.js';
 import { MAX_PER_DAY, NOTIFY_OPTIONS } from '../constants.js';
 import { api } from '../api.js';
 import Stamp from './Stamp.jsx';
+import { longPressHandlers } from '../drag.js';
 
 const notifyLabel = (offset) => NOTIFY_OPTIONS.find((o) => o.value === String(offset))?.label;
 
@@ -58,7 +59,10 @@ export default function DayPanel({ date, events, onChanged, onEditingChange, onD
         <ul className={`events${events.length >= 3 ? ' dense' : ''}`}>
           {events.map((ev) => (
             <li key={ev.id} onClick={() => setEditing(ev)}>
-              <Stamp id={ev.icon} className="ev-icon" />
+              <Stamp
+                id={ev.icon} className="ev-icon"
+                {...(onDragStart ? longPressHandlers((p) => onDragStart({ kind: 'move', event: ev, ...p })) : {})}
+              />
               <div className="ev-body">
                 <div className="ev-title">
                   <span className="ev-time">
