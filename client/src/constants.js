@@ -4,7 +4,7 @@ export const ICONS = ['⭐', '❤️', '🎂', '🍙', '💼', '📚', '🏃', '
 export const MAX_PER_DAY = 4;
 
 export const NOTIFY_OPTIONS = [
-  { value: '', label: '通知しない' },
+  { value: '', label: 'なし' },
   { value: '0', label: 'ちょうど' },
   { value: '10', label: '10分前' },
   { value: '30', label: '30分前' },

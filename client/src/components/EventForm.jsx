@@ -63,19 +63,19 @@ export default function EventForm({ date, initial, onSave, onDelete, onCancel })
 
       <input placeholder="タイトル" value={form.title} onChange={set('title')} required maxLength={50} />
 
+      {/* 日付・時刻・通知を1行にまとめて縦幅を節約 */}
       <div className="row">
         <label>日付<input type="date" value={form.date} onChange={set('date')} required /></label>
         <label>時刻<input type="time" value={form.start_time} onChange={set('start_time')} /></label>
+        <label>
+          通知
+          <select value={form.notify} onChange={set('notify')}>
+            {NOTIFY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          </select>
+        </label>
       </div>
 
-      <label>
-        通知
-        <select value={form.notify} onChange={set('notify')}>
-          {NOTIFY_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-      </label>
-
-      <textarea placeholder="メモ" value={form.memo} onChange={set('memo')} rows={3} />
+      <textarea placeholder="メモ" value={form.memo} onChange={set('memo')} rows={2} />
 
       {error && <p className="error">{error}</p>}
 

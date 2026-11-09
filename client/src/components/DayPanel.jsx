@@ -7,11 +7,12 @@ import { api } from '../api.js';
 const notifyLabel = (offset) => NOTIFY_OPTIONS.find((o) => o.value === String(offset))?.label;
 
 // 画面下半分：選択した日の予定一覧と、追加・編集フォーム
-export default function DayPanel({ date, events, onChanged }) {
+export default function DayPanel({ date, events, onChanged, onEditingChange }) {
   // editing: null=一覧表示 / 'new'=新規 / 予定オブジェクト=編集
   const [editing, setEditing] = useState(null);
 
   useEffect(() => setEditing(null), [date]);
+  useEffect(() => onEditingChange?.(Boolean(editing)), [editing, onEditingChange]);
 
   const save = async (body) => {
     if (editing === 'new') await api.createEvent(body);
@@ -49,17 +50,19 @@ export default function DayPanel({ date, events, onChanged }) {
       ) : events.length === 0 ? (
         <p className="empty">予定はありません</p>
       ) : (
-        <ul className="events">
+        <ul className={`events${events.length >= 3 ? ' dense' : ''}`}>
           {events.map((ev) => (
             <li key={ev.id} onClick={() => setEditing(ev)}>
               <span className="ev-icon">{ev.icon}</span>
               <div className="ev-body">
                 <div className="ev-title">
-                  <span className="ev-time">{ev.start_time ? ev.start_time.slice(0, 5) : '終日'}</span>
+                  <span className="ev-time">
+                    {ev.start_time ? ev.start_time.slice(0, 5) : '終日'}
+                    {ev.notify_offset != null && <span className="ev-bell" title={notifyLabel(ev.notify_offset)}>🔔</span>}
+                  </span>
                   {ev.title}
                 </div>
                 {ev.memo && <div className="ev-memo">{ev.memo}</div>}
-                {ev.notify_offset != null && <div className="ev-notify">🔔 {notifyLabel(ev.notify_offset)}</div>}
               </div>
             </li>
           ))}

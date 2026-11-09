@@ -20,6 +20,7 @@ export default function App() {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
   const [pushOn, setPushOn] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const grid = useMemo(() => monthGrid(view.year, view.month), [view]);
 
@@ -64,7 +65,7 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app${editing ? ' editing' : ''}`}>
       <header className="header">
         <button onClick={() => moveMonth(-1)} aria-label="前の月">◀</button>
         <h1>{view.year}年{view.month + 1}月</h1>
@@ -78,7 +79,7 @@ export default function App() {
 
       {error && <p className="error">{error}</p>}
 
-      <DayPanel date={selected} events={byDate[selected] || []} onChanged={load} />
+      <DayPanel date={selected} events={byDate[selected] || []} onChanged={load} onEditingChange={setEditing} />
     </div>
   );
 }
