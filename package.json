@@ -10,7 +10,8 @@
     "start": "node server/index.js",
     "dev:server": "node --watch --env-file-if-exists=.env server/index.js",
     "dev:client": "cd client && npm run dev",
-    "vapid": "node scripts/generate-vapid.js"
+    "vapid": "node scripts/generate-vapid.js",
+    "yomi": "npm install --no-save kuromoji && node scripts/generate-yomi.mjs"
   },
   "dependencies": {
     "express": "^5.1.0",

@@ -43,7 +43,7 @@ export default function StampPicker({ value, onChange }) {
         <button type="button" className={searching ? 'on' : ''} onClick={() => setSearching((s) => !s)} aria-label="検索">🔍</button>
         {searching ? (
           <input
-            autoFocus className="picker-search" placeholder="スタンプを検索（例：塾）"
+            autoFocus className="picker-search" placeholder="検索（しごと・じゅく などひらがなでもOK）"
             value={query} onChange={(e) => setQuery(e.target.value)}
           />
         ) : (

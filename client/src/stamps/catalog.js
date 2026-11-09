@@ -2,6 +2,7 @@
 // 末尾に「!」を付けると絵だけで分かるものとしてラベルを表示しない。
 // スタンプIDは `${カテゴリid}/${ラベル}`。DB の events.icon にはこのIDを保存する。
 import { MOTIFS } from './motifs.js';
+import YOMI from './yomi.json' with { type: 'json' };
 
 const RAW = [
   {
@@ -172,9 +173,33 @@ export const STAMP_COUNT = Object.keys(STAMPS).length;
 
 export const DEFAULT_STAMP_ID = CATEGORIES[0].items[0].id;
 
-// ラベルの部分一致で検索
+// 検索用に正規化：カタカナ→ひらがな、全角英数→半角、小文字化、空白除去
+export function normalize(str) {
+  return str
+    .replace(/[\u30a1-\u30f6]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0x60))
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+// ラベル・読み仮名（ひらがな）・カテゴリ名のどれかに部分一致したら候補に出す。
+// 「しごと」→仕事、「ジュク」→塾、「ごみ」→燃えるゴミ…のように読みでも引ける
 export function searchStamps(q) {
-  const s = q.trim();
-  if (!s) return [];
-  return Object.values(STAMPS).filter((st) => st.label.includes(s));
+  const n = normalize(q);
+  if (!n) return [];
+  const hit = [];
+  for (const c of CATEGORIES) {
+    const catName = normalize(c.name);
+    for (const st of c.items) {
+      const label = normalize(st.label);
+      const yomi = YOMI[st.id] || '';
+      let score = 0;
+      if (label === n || yomi === n) score = 3;            // 完全一致を先頭に
+      else if (label.startsWith(n) || yomi.startsWith(n)) score = 2;
+      else if (label.includes(n) || yomi.includes(n)) score = 1;
+      else if (catName.includes(n)) score = 0.5;           // カテゴリ名でも一応出す
+      if (score) hit.push({ st, score });
+    }
+  }
+  return hit.sort((a, b) => b.score - a.score).map((h) => h.st);
 }
