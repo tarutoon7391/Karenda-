@@ -36,8 +36,10 @@ export function longPressHandlers(onStart, delay = 280) {
   };
 }
 
-// 画面座標の下にあるカレンダーの日付（data-date）を返す
-export function dateAtPoint(x, y) {
+// 画面座標の下にあるドロップ先を返す：カレンダーの日付（'YYYY-MM-DD'）／ゴミ箱（'trash'）／なし（null）
+export function dropTargetAt(x, y) {
   const el = document.elementFromPoint(x, y);
-  return el?.closest?.('[data-date]')?.dataset.date || null;
+  if (!el) return null;
+  if (el.closest?.('[data-drop="trash"]')) return 'trash';
+  return el.closest?.('[data-date]')?.dataset.date || null;
 }

@@ -54,7 +54,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .panel {
   flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   border-top: 1px solid #eee; padding: 6px 14px 8px;
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; position: relative;
 }
 .panel-head { display: flex; align-items: center; justify-content: space-between; }
 .panel-head { flex: 0 0 auto; }
@@ -62,6 +62,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .add { background: #ff6b6b; color: #fff; border-radius: 999px; padding: 4px 12px; font-size: 14px; }
 .add:disabled { opacity: 0.4; }
 .empty, .hint { color: #999; font-size: 12px; margin: 4px 0; }
+.events { padding-bottom: 48px; } /* ゴミ箱と重ならないように */
 
 /* 予定は最大4件。4件を均等割りして、入りきらない分はメモを省略表示 */
 .events { list-style: none; margin: 0; padding: 0; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
@@ -150,3 +151,14 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   animation: ghost-pop 0.18s ease-out;
 }
 @keyframes ghost-pop { from { transform: translate(-50%, -60%) scale(0.5); opacity: 0.4; } to { transform: translate(-50%, -85%) rotate(-3deg); opacity: 1; } }
+
+/* ゴミ箱（下半分の左下） */
+.trash {
+  position: absolute; left: 10px; bottom: 10px; width: 44px; height: 44px; border-radius: 50%;
+  background: #f1f3f5; font-size: 22px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: transform 0.15s, background 0.15s; z-index: 5;
+}
+.trash:disabled { opacity: 0.35; }
+.trash.ready { background: #ffe3e3; transform: scale(1.15); animation: trash-wiggle 0.8s ease-in-out infinite; }
+.trash.hot { background: #ff6b6b; transform: scale(1.4); animation: none; }
+@keyframes trash-wiggle { 0%,100% { transform: scale(1.15) rotate(-6deg); } 50% { transform: scale(1.15) rotate(6deg); } }

@@ -9,7 +9,7 @@ import { longPressHandlers } from '../drag.js';
 const notifyLabel = (offset) => NOTIFY_OPTIONS.find((o) => o.value === String(offset))?.label;
 
 // 画面下半分：選択した日の予定一覧と、追加・編集フォーム
-export default function DayPanel({ date, events, onChanged, onEditingChange, onDragStart }) {
+export default function DayPanel({ date, events, onChanged, onEditingChange, onDragStart, trash }) {
   // editing: null=一覧表示 / 'new'=新規 / 予定オブジェクト=編集
   const [editing, setEditing] = useState(null);
 
@@ -78,6 +78,19 @@ export default function DayPanel({ date, events, onChanged, onEditingChange, onD
         </ul>
       )}
       {!editing && events.length >= MAX_PER_DAY && <p className="hint">1日に貼れるのは{MAX_PER_DAY}つまでです</p>}
+
+      {/* ゴミ箱：タップでその日を全消去、スタンプをつまんで落とすと確認なしで削除 */}
+      {trash?.visible && (
+        <button
+          type="button" data-drop="trash"
+          className={`trash${trash.hot ? ' hot' : ''}${trash.dragging ? ' ready' : ''}`}
+          onClick={trash.onClick} disabled={trash.disabled && !trash.dragging}
+          aria-label="この日の予定を全部削除"
+          title="タップで全消去／スタンプをここに落とすと削除"
+        >
+          🗑️
+        </button>
+      )}
     </section>
   );
 }

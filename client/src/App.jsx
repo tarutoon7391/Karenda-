@@ -3,7 +3,7 @@ import Calendar from './components/Calendar.jsx';
 import DayPanel from './components/DayPanel.jsx';
 import { api } from './api.js';
 import { calcNotifyAt, monthGrid, parseKey, toKey, todayKey } from './dateUtils.js';
-import { dateAtPoint } from './drag.js';
+import { dropTargetAt } from './drag.js';
 import Stamp from './components/Stamp.jsx';
 import { STAMPS } from './stamps/catalog.js';
 import { pushRecent } from './components/StampPicker.jsx';
@@ -63,7 +63,7 @@ export default function App() {
   };
 
   const onDragStart = useCallback((info) => {
-    const d = { ...info, stampId: info.stampId || info.event?.icon, eventId: info.event?.id ?? null, over: dateAtPoint(info.x, info.y) };
+    const d = { ...info, stampId: info.stampId || info.event?.icon, eventId: info.event?.id ?? null, over: dropTargetAt(info.x, info.y) };
     dragRef.current = d;
     setDrag(d);
   }, []);
@@ -75,9 +75,17 @@ export default function App() {
     setDrag(null);
     if (!d) return;
     justDropped.current = Date.now();
-    const target = dateAtPoint(x, y);
+    const target = dropTargetAt(x, y);
     if (!target) return;
     try {
+      if (target === 'trash') {
+        // ゴミ箱に落としたら確認なしで削除（ピッカーから持ってきた新規スタンプは何もしない）
+        if (d.kind === 'move') {
+          await api.deleteEvent(d.event.id);
+          await load();
+        }
+        return;
+      }
       if (d.kind === 'new') {
         const st = STAMPS[d.stampId];
         pushRecent(d.stampId);
@@ -109,7 +117,7 @@ export default function App() {
   useEffect(() => {
     if (!drag) return;
     const move = (e) => {
-      const over = dateAtPoint(e.clientX, e.clientY);
+      const over = dropTargetAt(e.clientX, e.clientY);
       const next = { ...dragRef.current, x: e.clientX, y: e.clientY, over };
       dragRef.current = next;
       setDrag(next);
@@ -132,6 +140,19 @@ export default function App() {
   // ドロップ直後に飛んでくるクリックで日付やスタンプが切り替わらないようにする
   const swallowClick = (e) => {
     if (Date.now() - justDropped.current < 400) { e.stopPropagation(); e.preventDefault(); }
+  };
+
+  // その日の予定をまとめて削除（ゴミ箱タップ）
+  const clearDay = async () => {
+    const evs = byDate[selected] || [];
+    if (!evs.length) return;
+    if (!confirm(`${evs.length}件の予定をすべて削除しますか？`)) return;
+    try {
+      await Promise.all(evs.map((ev) => api.deleteEvent(ev.id)));
+      await load();
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   const handlePush = async () => {
@@ -159,7 +180,11 @@ export default function App() {
 
       {error && <p className="error">{error}</p>}
 
-      <DayPanel date={selected} events={byDate[selected] || []} onChanged={load} onEditingChange={setEditing} onDragStart={onDragStart} />
+      <DayPanel
+        date={selected} events={byDate[selected] || []} onChanged={load}
+        onEditingChange={setEditing} onDragStart={onDragStart}
+        trash={{ visible: !editing || drag?.kind === 'move', hot: drag?.over === 'trash', dragging: drag?.kind === 'move', onClick: clearDay, disabled: !(byDate[selected] || []).length }}
+      />
 
       {/* つまんでいるスタンプ（指に追従する） */}
       {drag && (
