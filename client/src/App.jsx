@@ -52,7 +52,9 @@ export default function App() {
     return map;
   }, [events]);
 
+  const [slideDir, setSlideDir] = useState(0);
   const moveMonth = (diff) => {
+    setSlideDir(diff);
     const d = new Date(view.year, view.month + diff, 1);
     setView({ year: d.getFullYear(), month: d.getMonth() });
   };
@@ -170,7 +172,7 @@ export default function App() {
     <div className={`app${editing ? ' editing' : ''}${drag ? ' dragging' : ''}`} onClickCapture={swallowClick}>
       <header className="header">
         <button className="nav" onClick={() => moveMonth(-1)} aria-label="前の月"><ChevronIcon dir="left" /></button>
-        <h1>{view.year}年{view.month + 1}月</h1>
+        <h1 key={`${view.year}-${view.month}`} className={slideDir > 0 ? 'slide-next' : slideDir < 0 ? 'slide-prev' : ''}>{view.year}年{view.month + 1}月</h1>
         <button className="nav" onClick={() => moveMonth(1)} aria-label="次の月"><ChevronIcon dir="right" /></button>
         <button className="bell" onClick={handlePush} title={pushOn ? '通知オン' : '通知をオンにする'} aria-label="通知">
           <BellIcon on={pushOn} />
