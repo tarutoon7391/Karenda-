@@ -5,7 +5,7 @@ import StampPicker, { pushRecent } from './StampPicker.jsx';
 import { calcNotifyAt } from '../dateUtils.js';
 
 // 予定の追加・編集フォーム
-export default function EventForm({ date, initial, onSave, onDelete, onCancel }) {
+export default function EventForm({ date, initial, onSave, onDelete, onCancel, onDragStart }) {
   const [form, setForm] = useState(() => ({
     date: initial?.date ?? date,
     icon: initial?.icon ?? DEFAULT_STAMP_ID,
@@ -51,7 +51,7 @@ export default function EventForm({ date, initial, onSave, onDelete, onCancel })
 
   return (
     <form className="form" onSubmit={submit}>
-      <StampPicker value={form.icon} onChange={(icon) => setForm({ ...form, icon })} />
+      <StampPicker value={form.icon} onChange={(icon) => setForm({ ...form, icon })} onDragStart={onDragStart} />
 
       <input placeholder={`タイトル（空ならスタンプ名「${STAMPS[form.icon]?.label ?? ''}」）`} value={form.title} onChange={set('title')} maxLength={50} />
 

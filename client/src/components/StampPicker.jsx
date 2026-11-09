@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Stamp from './Stamp.jsx';
 import { CATEGORIES, searchStamps, STAMPS } from '../stamps/catalog.js';
+import { longPressHandlers } from '../drag.js';
 
 const RECENT_KEY = 'karenda.recentStamps';
 const RECENT_MAX = 14;
@@ -18,7 +19,7 @@ export function pushRecent(id) {
 }
 
 // スタンプ選択。カテゴリタブ＋グリッド。🔍を押すと検索欄に切り替わる
-export default function StampPicker({ value, onChange }) {
+export default function StampPicker({ value, onChange, onDragStart }) {
   const recent = useMemo(loadRecent, []);
   const [tab, setTab] = useState(() => (recent.length ? 'recent' : STAMPS[value]?.cat || CATEGORIES[0].id));
   const [query, setQuery] = useState('');
@@ -57,12 +58,14 @@ export default function StampPicker({ value, onChange }) {
           </div>
         )}
       </div>
+      <p className="picker-hint">長押しでつまんでカレンダーに貼れます（時刻なし・前日通知）</p>
       <div className="picker-grid">
         {items.length === 0 && <p className="empty">{searching ? '見つかりません' : 'スタンプがありません'}</p>}
         {items.map((st) => (
           <button
             type="button" key={st.id} className={st.id === value ? 'on' : ''}
             onClick={() => onChange(st.id)} aria-label={st.label}
+            {...(onDragStart ? longPressHandlers((p) => onDragStart({ kind: 'new', stampId: st.id, ...p })) : {})}
           >
             <Stamp id={st.id} />
           </button>

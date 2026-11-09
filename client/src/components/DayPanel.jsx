@@ -8,7 +8,7 @@ import Stamp from './Stamp.jsx';
 const notifyLabel = (offset) => NOTIFY_OPTIONS.find((o) => o.value === String(offset))?.label;
 
 // 画面下半分：選択した日の予定一覧と、追加・編集フォーム
-export default function DayPanel({ date, events, onChanged, onEditingChange }) {
+export default function DayPanel({ date, events, onChanged, onEditingChange, onDragStart }) {
   // editing: null=一覧表示 / 'new'=新規 / 予定オブジェクト=編集
   const [editing, setEditing] = useState(null);
 
@@ -50,6 +50,7 @@ export default function DayPanel({ date, events, onChanged, onEditingChange }) {
           onSave={save}
           onDelete={editing === 'new' ? null : remove}
           onCancel={() => setEditing(null)}
+          onDragStart={onDragStart}
         />
       ) : events.length === 0 ? (
         <p className="empty">予定はありません</p>

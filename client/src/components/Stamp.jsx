@@ -18,10 +18,10 @@ function labelSize(len) {
 }
 
 // 1枚のスタンプ（シール）を SVG で描く。id が見つからないときは旧データ（絵文字）としてそのまま表示する
-export default function Stamp({ id, className = '', style }) {
+export default function Stamp({ id, className = '', style, ...rest }) {
   const st = STAMPS[id];
   if (!st) {
-    return <span className={`stamp stamp-fallback ${className}`} style={style}>{id}</span>;
+    return <span className={`stamp stamp-fallback ${className}`} style={style} {...rest}>{id}</span>;
   }
   const cat = CATEGORY_BY_ID[st.cat];
   const h = hash(id);
@@ -31,7 +31,7 @@ export default function Stamp({ id, className = '', style }) {
   const withLabel = st.showLabel;
 
   return (
-    <svg className={`stamp ${className}`} style={style} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label={st.label}>
+    <svg className={`stamp ${className}`} style={style} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label={st.label} {...rest}>
       <g transform={`rotate(${rot} 50 50)`}>
         {/* シール台紙：白フチ＋パステル色 */}
         <rect x="3" y="3" width="94" height="94" rx="24" fill="#fff" stroke="rgba(0,0,0,0.12)" strokeWidth="1.5" />
