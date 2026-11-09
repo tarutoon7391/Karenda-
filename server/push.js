@@ -2,21 +2,41 @@
 import webpush from 'web-push';
 import { pool } from './db.js';
 
-export const pushEnabled = Boolean(process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY);
+let publicKey = null;
 
-if (pushEnabled) {
-  webpush.setVapidDetails(
-    process.env.VAPID_SUBJECT || 'mailto:admin@example.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY,
-  );
-} else {
-  console.warn('[push] VAPID キーが未設定のため通知は無効です（npm run vapid で生成）');
+// VAPID キーを用意する。環境変数があればそれを使い、なければ DB に保存したキー（初回は自動生成）を使う
+export async function initPush() {
+  let pub = process.env.VAPID_PUBLIC_KEY;
+  let priv = process.env.VAPID_PRIVATE_KEY;
+  if (!pub || !priv) {
+    const { rows } = await pool.query(
+      "SELECT key, value FROM app_settings WHERE key IN ('vapid_public', 'vapid_private')",
+    );
+    const saved = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+    if (saved.vapid_public && saved.vapid_private) {
+      pub = saved.vapid_public;
+      priv = saved.vapid_private;
+    } else {
+      const keys = webpush.generateVAPIDKeys();
+      pub = keys.publicKey;
+      priv = keys.privateKey;
+      await pool.query(
+        `INSERT INTO app_settings (key, value) VALUES ('vapid_public', $1), ('vapid_private', $2)
+         ON CONFLICT (key) DO NOTHING`,
+        [pub, priv],
+      );
+      console.log('[push] VAPID キーを自動生成して DB に保存しました');
+    }
+  }
+  webpush.setVapidDetails(process.env.VAPID_SUBJECT || 'mailto:admin@example.com', pub, priv);
+  publicKey = pub;
 }
+
+export const getPublicKey = () => publicKey;
 
 // 登録済みの全端末に通知を送る。無効になった購読は削除する
 export async function sendToAll(payload) {
-  if (!pushEnabled) return { sent: 0 };
+  if (!publicKey) return { sent: 0 };
   const { rows } = await pool.query('SELECT * FROM push_subscriptions');
   let sent = 0;
   await Promise.all(

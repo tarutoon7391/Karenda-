@@ -47,7 +47,7 @@ client/
 
 1. Railway で New Project → Deploy from GitHub repo → `Karenda-` を選ぶ
 2. 同じプロジェクトに **PostgreSQL** を追加し、アプリ側の Variables に `DATABASE_URL` を参照で追加（`${{Postgres.DATABASE_URL}}`）
-3. ローカルで `npm install && npm run vapid` を実行し、出てきた `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` / `VAPID_SUBJECT` を Variables に追加
+3. VAPID キー（通知用）は初回起動時に自動生成して DB に保存されるので設定不要（自分で指定したい場合だけ `npm run vapid` の値を Variables に入れる）
 4. Settings → Networking → Generate Domain で URL を発行
 5. Build は `npm run build`、Start は `npm start`（package.json のままで自動認識される）
 

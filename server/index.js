@@ -6,6 +6,7 @@ import { initDb } from './db.js';
 import eventsRouter from './routes/events.js';
 import pushRouter from './routes/push.js';
 import { startScheduler } from './scheduler.js';
+import { initPush } from './push.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.resolve(__dirname, '../client/dist');
@@ -31,5 +32,6 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 3000;
 await initDb();
+await initPush();
 startScheduler();
 app.listen(port, () => console.log(`karenda listening on :${port}`));

@@ -1,13 +1,14 @@
 // Push 通知の購読 API
 import { Router } from 'express';
 import { pool } from '../db.js';
-import { pushEnabled, sendToAll } from '../push.js';
+import { getPublicKey, sendToAll } from '../push.js';
 
 const router = Router();
 
 router.get('/public-key', (req, res) => {
-  if (!pushEnabled) return res.status(503).json({ error: 'サーバーで通知が設定されていません' });
-  res.json({ key: process.env.VAPID_PUBLIC_KEY });
+  const key = getPublicKey();
+  if (!key) return res.status(503).json({ error: 'サーバーで通知が準備できていません' });
+  res.json({ key });
 });
 
 router.post('/subscribe', async (req, res) => {
