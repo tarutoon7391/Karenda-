@@ -34,7 +34,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .weekdays, .grid { display: grid; grid-template-columns: repeat(7, 1fr); }
 .wd { text-align: center; font-size: 11px; padding: 2px 0; color: #888; }
 .wd-0 { color: #e03131; } .wd-6 { color: #1971c2; }
-.grid { flex: 1; min-height: 0; gap: 2px; } /* 行数は月ごとに Calendar.jsx 側で指定 */
+.grid { flex: 1; min-height: 0; gap: 2px; transition: transform 0.15s ease-out, opacity 0.15s; }
+.grid.swiping { transition: none; } /* 行数は月ごとに Calendar.jsx 側で指定 */
 
 .cell {
   position: relative; border-radius: 6px; background: #f8f9fa; min-height: 0;

@@ -177,7 +177,7 @@ export default function App() {
         </button>
       </header>
 
-      <Calendar grid={grid} month={view.month} byDate={byDate} selected={selected} onSelect={selectDate} drag={drag} onDragStart={onDragStart} />
+      <Calendar grid={grid} month={view.month} byDate={byDate} selected={selected} onSelect={selectDate} drag={drag} onDragStart={onDragStart} onSwipe={moveMonth} />
 
       {error && <p className="error">{error}</p>}
 
