@@ -19,7 +19,8 @@ async function tick() {
     `);
     for (const ev of rows) {
       await sendToAll({
-        title: `${ev.icon} ${ev.title}`,
+        // icon はスタンプID（例: school/始業式）か旧データの絵文字。IDなら表示しない
+        title: ev.icon.includes('/') ? ev.title : `${ev.icon} ${ev.title}`,
         body: formatBody(ev),
         url: `/?date=${ev.date}`,
       });

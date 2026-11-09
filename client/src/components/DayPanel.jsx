@@ -3,6 +3,7 @@ import EventForm from './EventForm.jsx';
 import { formatLong } from '../dateUtils.js';
 import { MAX_PER_DAY, NOTIFY_OPTIONS } from '../constants.js';
 import { api } from '../api.js';
+import Stamp from './Stamp.jsx';
 
 const notifyLabel = (offset) => NOTIFY_OPTIONS.find((o) => o.value === String(offset))?.label;
 
@@ -30,14 +31,17 @@ export default function DayPanel({ date, events, onChanged, onEditingChange }) {
 
   return (
     <section className="panel">
+      {/* フォーム表示中は日付がフォーム内にあるので見出しを省略して縦幅を節約 */}
+      {!editing && (
       <div className="panel-head">
         <h2>{formatLong(date)}</h2>
-        {!editing && (
+        {(
           <button className="add" disabled={events.length >= MAX_PER_DAY} onClick={() => setEditing('new')}>
             ＋ 貼る
           </button>
         )}
       </div>
+      )}
 
       {editing ? (
         <EventForm
@@ -53,7 +57,7 @@ export default function DayPanel({ date, events, onChanged, onEditingChange }) {
         <ul className={`events${events.length >= 3 ? ' dense' : ''}`}>
           {events.map((ev) => (
             <li key={ev.id} onClick={() => setEditing(ev)}>
-              <span className="ev-icon">{ev.icon}</span>
+              <Stamp id={ev.icon} className="ev-icon" />
               <div className="ev-body">
                 <div className="ev-title">
                   <span className="ev-time">

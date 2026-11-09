@@ -1,6 +1,3 @@
-// 貼れるアイコン（シール）の候補。あとで画像に差し替えてもOK
-export const ICONS = ['⭐', '❤️', '🎂', '🍙', '💼', '📚', '🏃', '🎮', '🛒', '🏥', '✈️', '🎵', '🍺', '💰', '📝', '🎉'];
-
 export const MAX_PER_DAY = 4;
 
 export const NOTIFY_OPTIONS = [

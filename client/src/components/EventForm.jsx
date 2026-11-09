@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { ICONS, NOTIFY_OPTIONS } from '../constants.js';
+import { NOTIFY_OPTIONS } from '../constants.js';
+import { DEFAULT_STAMP_ID, STAMPS } from '../stamps/catalog.js';
+import StampPicker, { pushRecent } from './StampPicker.jsx';
 import { calcNotifyAt } from '../dateUtils.js';
 
 // 予定の追加・編集フォーム
 export default function EventForm({ date, initial, onSave, onDelete, onCancel }) {
   const [form, setForm] = useState(() => ({
     date: initial?.date ?? date,
-    icon: initial?.icon ?? ICONS[0],
+    icon: initial?.icon ?? DEFAULT_STAMP_ID,
     title: initial?.title ?? '',
     start_time: initial?.start_time?.slice(0, 5) ?? '',
     memo: initial?.memo ?? '',
@@ -23,10 +25,11 @@ export default function EventForm({ date, initial, onSave, onDelete, onCancel })
     setBusy(true);
     setError('');
     try {
+      pushRecent(form.icon);
       await onSave({
         date: form.date,
         icon: form.icon,
-        title: form.title,
+        title: form.title.trim() || STAMPS[form.icon]?.label || form.icon,
         start_time: form.start_time || null,
         memo: form.memo,
         notify_offset: offset,
@@ -48,20 +51,9 @@ export default function EventForm({ date, initial, onSave, onDelete, onCancel })
 
   return (
     <form className="form" onSubmit={submit}>
-      <div className="icon-picker">
-        {ICONS.map((ic) => (
-          <button
-            type="button"
-            key={ic}
-            className={ic === form.icon ? 'on' : ''}
-            onClick={() => setForm({ ...form, icon: ic })}
-          >
-            {ic}
-          </button>
-        ))}
-      </div>
+      <StampPicker value={form.icon} onChange={(icon) => setForm({ ...form, icon })} />
 
-      <input placeholder="タイトル" value={form.title} onChange={set('title')} required maxLength={50} />
+      <input placeholder={`タイトル（空ならスタンプ名「${STAMPS[form.icon]?.label ?? ''}」）`} value={form.title} onChange={set('title')} maxLength={50} />
 
       {/* 日付・時刻・通知を1行にまとめて縦幅を節約 */}
       <div className="row">

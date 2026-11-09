@@ -1,5 +1,6 @@
 import { WEEKDAYS, toKey, todayKey } from '../dateUtils.js';
 import { MAX_PER_DAY } from '../constants.js';
+import Stamp from './Stamp.jsx';
 
 // 月のカレンダー。各マスに最大4つのアイコン（シール）を2×2で表示する
 export default function Calendar({ grid, month, byDate, selected, onSelect }) {
@@ -26,7 +27,7 @@ export default function Calendar({ grid, month, byDate, selected, onSelect }) {
             <button key={key} className={cls} onClick={() => onSelect(key)}>
               <span className="num">{d.getDate()}</span>
               <span className="stickers">
-                {evs.map((ev) => <span key={ev.id} className="sticker">{ev.icon}</span>)}
+                {evs.map((ev) => <Stamp key={ev.id} id={ev.icon} className="sticker" />)}
               </span>
             </button>
           );
