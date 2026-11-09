@@ -108,3 +108,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .actions .primary { background: #ff6b6b; color: #fff; }
 .actions .danger { color: #e03131; }
 .error { color: #e03131; font-size: 13px; padding: 0 14px; }
+
+/* ホーム画面アプリ（スタンドアロン）で開いたときだけ、上部ステータスバーのぼかしに被らないよう少し下げる */
+@media (display-mode: standalone) {
+  .app { padding-top: calc(env(safe-area-inset-top) + 14px); }
+}
