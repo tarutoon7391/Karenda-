@@ -5,6 +5,7 @@ import { MAX_PER_DAY, NOTIFY_OPTIONS } from '../constants.js';
 import { api } from '../api.js';
 import Stamp from './Stamp.jsx';
 import { longPressHandlers } from '../drag.js';
+import { PlusIcon, TrashIcon } from './Icons.jsx';
 
 const notifyLabel = (offset) => NOTIFY_OPTIONS.find((o) => o.value === String(offset))?.label;
 
@@ -38,7 +39,7 @@ export default function DayPanel({ date, events, onChanged, onEditingChange, onD
         <h2>{formatLong(date)}</h2>
         {(
           <button className="add" disabled={events.length >= MAX_PER_DAY} onClick={() => setEditing('new')} title={`1日に貼れるのは${MAX_PER_DAY}つまで`}>
-            ＋ 貼る
+            <PlusIcon /> 貼る
           </button>
         )}
       </div>
@@ -87,7 +88,7 @@ export default function DayPanel({ date, events, onChanged, onEditingChange, onD
           aria-label="この日の予定を全部削除"
           title="タップで全消去／スタンプをここに落とすと削除"
         >
-          🗑️
+          <TrashIcon hot={trash.hot} />
         </button>
       )}
     </section>

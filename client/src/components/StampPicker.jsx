@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Stamp from './Stamp.jsx';
 import { CATEGORIES, searchStamps, STAMPS } from '../stamps/catalog.js';
 import { longPressHandlers } from '../drag.js';
+import { SearchIcon } from './Icons.jsx';
 
 const RECENT_KEY = 'karenda.recentStamps';
 const RECENT_MAX = 14;
@@ -41,7 +42,7 @@ export default function StampPicker({ value, onChange, onDragStart }) {
   return (
     <div className="picker">
       <div className="picker-tabs">
-        <button type="button" className={searching ? 'on' : ''} onClick={() => setSearching((s) => !s)} aria-label="検索">🔍</button>
+        <button type="button" className={searching ? 'on' : ''} onClick={() => setSearching((s) => !s)} aria-label="検索"><SearchIcon /></button>
         {searching ? (
           <input
             autoFocus className="picker-search" placeholder="検索（しごと・じゅく などひらがなでもOK）"

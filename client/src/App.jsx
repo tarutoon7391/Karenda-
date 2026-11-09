@@ -7,6 +7,7 @@ import { dropTargetAt } from './drag.js';
 import Stamp from './components/Stamp.jsx';
 import { STAMPS } from './stamps/catalog.js';
 import { pushRecent } from './components/StampPicker.jsx';
+import { BellIcon, ChevronIcon } from './components/Icons.jsx';
 import { enablePush, isPushEnabled } from './push.js';
 
 // 通知タップで ?date=YYYY-MM-DD 付きで開かれたらその日を選択する
@@ -168,11 +169,11 @@ export default function App() {
   return (
     <div className={`app${editing ? ' editing' : ''}${drag ? ' dragging' : ''}`} onClickCapture={swallowClick}>
       <header className="header">
-        <button onClick={() => moveMonth(-1)} aria-label="前の月">◀</button>
+        <button className="nav" onClick={() => moveMonth(-1)} aria-label="前の月"><ChevronIcon dir="left" /></button>
         <h1>{view.year}年{view.month + 1}月</h1>
-        <button onClick={() => moveMonth(1)} aria-label="次の月">▶</button>
-        <button className="bell" onClick={handlePush} title="通知をオンにする">
-          {pushOn ? '🔔' : '🔕'}
+        <button className="nav" onClick={() => moveMonth(1)} aria-label="次の月"><ChevronIcon dir="right" /></button>
+        <button className="bell" onClick={handlePush} title={pushOn ? '通知オン' : '通知をオンにする'} aria-label="通知">
+          <BellIcon on={pushOn} />
         </button>
       </header>
 
