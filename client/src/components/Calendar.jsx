@@ -12,7 +12,7 @@ export default function Calendar({ grid, month, byDate, selected, onSelect }) {
           <div key={w} className={`wd wd-${i}`}>{w}</div>
         ))}
       </div>
-      <div className="grid">
+      <div className="grid" style={{ gridTemplateRows: `repeat(${grid.length / 7}, minmax(0, 1fr))` }}>
         {grid.map((d) => {
           const key = toKey(d);
           const evs = (byDate[key] || []).slice(0, MAX_PER_DAY);

@@ -9,11 +9,14 @@ export function parseKey(key) {
   return new Date(y, m - 1, d);
 }
 
-// 月表示用：日曜始まりで6週分（42日）の日付を返す
+// 月表示用：日曜始まりで、その月を収めるのに必要な週数ぶん（4〜6週）の日付を返す。
+// 次の月だけの行は作らない（行数を減らしてマスを大きく見せるため）
 export function monthGrid(year, month) {
   const first = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const weeks = Math.ceil((first.getDay() + daysInMonth) / 7);
   const start = new Date(year, month, 1 - first.getDay());
-  return Array.from({ length: 42 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
+  return Array.from({ length: weeks * 7 }, (_, i) => new Date(start.getFullYear(), start.getMonth(), start.getDate() + i));
 }
 
 const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
