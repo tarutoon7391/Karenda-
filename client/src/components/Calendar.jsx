@@ -28,7 +28,7 @@ export default function Calendar({ grid, month, byDate, selected, onSelect, drag
           return (
             <button key={key} className={cls} data-date={key} onClick={() => onSelect(key)}>
               <span className="num">{d.getDate()}</span>
-              <span className="stickers">
+              <span className={`stickers n${evs.length}`}>
                 {evs.map((ev) => (
                   <Stamp
                     key={ev.id} id={ev.icon}

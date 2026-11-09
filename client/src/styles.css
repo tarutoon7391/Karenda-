@@ -22,9 +22,10 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .header button { font-size: 18px; padding: 4px 8px; }
 
 /* カレンダーは絶対にスクロールさせない：高さ固定・はみ出しは隠す */
+/* カレンダーは余った高さを全部使う。スクロールは一切しない */
 .calendar {
-  flex: 0 0 50%; min-height: 0; overflow: hidden;
-  display: flex; flex-direction: column; padding: 0 4px;
+  flex: 1 1 auto; min-height: 0; overflow: hidden;
+  display: flex; flex-direction: column; padding: 0 3px;
 }
 .weekdays, .grid { display: grid; grid-template-columns: repeat(7, 1fr); }
 .wd { text-align: center; font-size: 11px; padding: 2px 0; color: #888; }
@@ -44,45 +45,50 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .cell.selected { outline: 2px solid #ff6b6b; }
 .stickers {
   flex: 1; min-height: 0; width: 100%; margin-top: 11px;
-  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; place-items: center; gap: 0;
+  display: grid; place-items: center; gap: 1px;
 }
+/* 1件：1個を大きく／2件：縦2段／3〜4件：2×2 */
+.stickers.n1 { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr); }
+.stickers.n2 { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
+.stickers.n3, .stickers.n4 { grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); }
 .stamp { display: block; width: 100%; height: 100%; max-width: 100%; max-height: 100%; aspect-ratio: 1; overflow: visible; }
 .stamp-fallback { font-size: clamp(9px, min(3.4vw, 2vh), 18px); line-height: 1; text-align: center; }
-.stickers .stamp { width: 100%; height: 100%; }
+.stickers .stamp { width: 100%; height: 100%; aspect-ratio: auto; min-height: 0; }
 
-/* 下半分：基本は収める。どうしても入らないときだけ最小限スクロール */
+/* 下半分：見出し＋予定リストだけの小さい枠。スクロールするのはリストの中だけ（入りきるときはしない） */
 .panel {
-  flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  flex: 0 0 auto; max-height: min(36%, 240px); min-height: 96px; overflow: hidden;
   border-top: 1px solid #eee; padding: 6px 14px 8px;
   display: flex; flex-direction: column; position: relative;
 }
+/* フォーム表示中は必要な高さぶん広がる（そのあいだカレンダーが縮む） */
+.app.editing .panel { max-height: none; }
 .panel-head { display: flex; align-items: center; justify-content: space-between; }
 .panel-head { flex: 0 0 auto; }
 .panel-head h2 { font-size: 15px; margin: 2px 0; }
 .add { background: #ff6b6b; color: #fff; border-radius: 999px; padding: 4px 12px; font-size: 14px; }
 .add:disabled { opacity: 0.4; }
 .empty, .hint { color: #999; font-size: 12px; margin: 4px 0; }
-.events { padding-bottom: 48px; } /* ゴミ箱と重ならないように */
+
 
 /* 予定は最大4件。4件を均等割りして、入りきらない分はメモを省略表示 */
-.events { list-style: none; margin: 0; padding: 0; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
-.events li {
-  flex: 0 1 25%; min-height: 0; overflow: hidden;
-  display: flex; align-items: center; gap: 10px; padding: 4px 0; border-bottom: 1px solid #f1f1f1; cursor: pointer;
+.events {
+  list-style: none; margin: 0; padding: 0 0 44px; flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
 }
-.ev-icon { flex: 0 0 auto; width: clamp(34px, 6.4vh, 48px); height: clamp(34px, 6.4vh, 48px); }
+.events li {
+  display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f1f1f1; cursor: pointer;
+}
+.ev-icon { flex: 0 0 auto; width: 40px; height: 40px; }
 .ev-icon.stamp-fallback { font-size: 26px; display: flex; align-items: center; justify-content: center; }
 .ev-body { flex: 1; min-width: 0; }
 .ev-title { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ev-time { font-weight: 400; color: #888; margin-right: 8px; font-size: 13px; }
-.ev-memo {
-  font-size: 12px; color: #555; white-space: pre-wrap; margin-top: 1px;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
+.ev-memo { font-size: 12px; color: #555; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ev-notify { font-size: 11px; color: #999; }
 .ev-time .ev-bell { margin-left: 4px; }
 /* 予定が3件以上ある日はメモを1行に省略（全文は予定をタップすると見られる） */
-.events.dense .ev-memo { -webkit-line-clamp: 1; white-space: nowrap; text-overflow: ellipsis; display: block; }
+
 
 /* フォームは詰めて配置（入力欄は16pxのままにしてiOSの自動ズームを防ぐ） */
 /* フォームは下半分いっぱいに広げ、余った高さはメモ欄に回す */
@@ -154,8 +160,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 
 /* ゴミ箱（下半分の左下） */
 .trash {
-  position: absolute; left: 10px; bottom: 10px; width: 44px; height: 44px; border-radius: 50%;
-  background: #f1f3f5; font-size: 22px; display: flex; align-items: center; justify-content: center;
+  position: absolute; left: 10px; bottom: 8px; width: 38px; height: 38px; border-radius: 50%;
+  background: #f1f3f5; font-size: 19px; display: flex; align-items: center; justify-content: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12); transition: transform 0.15s, background 0.15s; z-index: 5;
 }
 .trash:disabled { opacity: 0.35; }

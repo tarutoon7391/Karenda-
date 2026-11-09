@@ -37,7 +37,7 @@ export default function DayPanel({ date, events, onChanged, onEditingChange, onD
       <div className="panel-head">
         <h2>{formatLong(date)}</h2>
         {(
-          <button className="add" disabled={events.length >= MAX_PER_DAY} onClick={() => setEditing('new')}>
+          <button className="add" disabled={events.length >= MAX_PER_DAY} onClick={() => setEditing('new')} title={`1日に貼れるのは${MAX_PER_DAY}つまで`}>
             ＋ 貼る
           </button>
         )}
@@ -77,7 +77,6 @@ export default function DayPanel({ date, events, onChanged, onEditingChange, onD
           ))}
         </ul>
       )}
-      {!editing && events.length >= MAX_PER_DAY && <p className="hint">1日に貼れるのは{MAX_PER_DAY}つまでです</p>}
 
       {/* ゴミ箱：タップでその日を全消去、スタンプをつまんで落とすと確認なしで削除 */}
       {trash?.visible && (
